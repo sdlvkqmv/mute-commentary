@@ -1,0 +1,4 @@
+torch
+torchaudio
+# sam-audio는 pip install 아래 명령어로 설치:
+# pip install git+https://github.com/facebookresearch/sam-audio.git
