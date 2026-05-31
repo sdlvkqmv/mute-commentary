@@ -44,26 +44,26 @@ batch = processor(
 )
 
 # Separate audio
-#result = model.separate(
-#    audios=batch.audios,
-#    descriptions=batch.descriptions,
-#    sizes=batch.sizes,
-#    anchor_ids=batch.anchor_ids,
-#    anchor_alignment=batch.anchor_alignment,
-#    ode_decode_chunk_size=50,
-#)
+result = model.separate(
+    audios=batch.audios,
+    descriptions=batch.descriptions,
+    sizes=batch.sizes,
+    anchor_ids=batch.anchor_ids,
+    anchor_alignment=batch.anchor_alignment,
+    ode_decode_chunk_size=50,
+)
 
 # For long audio files, use separate_long().
 # Note: This is slower than separate() but it is more memory efficient.
-result = model.separate_long(
-     audios=batch.audios,
-     descriptions=batch.descriptions,
-     chunk_seconds=10.0,
-     overlap_seconds=3.0,
-     anchor_ids=batch.anchor_ids,
-     anchor_alignment=batch.anchor_alignment,
-     ode_decode_chunk_size=50,
-)
+#result = model.separate_long(
+#     audios=batch.audios,
+#     descriptions=batch.descriptions,
+#     chunk_seconds=10.0,
+#     overlap_seconds=3.0,
+##     anchor_ids=batch.anchor_ids,
+ #    anchor_alignment=batch.anchor_alignment,
+ #    ode_decode_chunk_size=50,
+#)
 
 stem = input_path.stem
 save_audio(result.target[0], f"{stem}_separated.wav", sample_rate=model.sample_rate)
