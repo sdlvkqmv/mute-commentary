@@ -34,7 +34,9 @@ print(f"Saved to {mp3_path}")
 
 # Load model and processor
 processor = SAMAudioProcessor.from_pretrained("mlx-community/sam-audio-large-fp16")
+#processor = SAMAudioProcessor.from_pretrained("mlx-community/sam-audio-base-fp16")
 model = SAMAudio.from_pretrained("mlx-community/sam-audio-large-fp16")
+#model = SAMAudio.from_pretrained("mlx-community/sam-audio-base-fp16")
 
 # Process inputs
 batch = processor(
@@ -44,6 +46,7 @@ batch = processor(
 )
 
 # Separate audio
+'''
 result = model.separate(
     audios=batch.audios,
     descriptions=batch.descriptions,
@@ -52,22 +55,23 @@ result = model.separate(
     anchor_alignment=batch.anchor_alignment,
     ode_decode_chunk_size=50,
 )
+'''
 
 # For long audio files, use separate_long().
 # Note: This is slower than separate() but it is more memory efficient.
-#result = model.separate_long(
-#     audios=batch.audios,
-#     descriptions=batch.descriptions,
-#     chunk_seconds=10.0,
-#     overlap_seconds=3.0,
-##     anchor_ids=batch.anchor_ids,
- #    anchor_alignment=batch.anchor_alignment,
- #    ode_decode_chunk_size=50,
-#)
+result = model.separate_long(
+     audios=batch.audios,
+     descriptions=batch.descriptions,
+     chunk_seconds=20.0,
+     overlap_seconds=3.0,
+     anchor_ids=batch.anchor_ids,
+    anchor_alignment=batch.anchor_alignment,
+    ode_decode_chunk_size=50,
+)
 
 stem = input_path.stem
-save_audio(result.target[0], f"{stem}_separated.wav", sample_rate=model.sample_rate)
-save_audio(result.residual[0], f"{stem}_residual.wav", sample_rate=model.sample_rate)
+save_audio(result.target[0], f"{stem}_separated-large.wav", sample_rate=model.sample_rate)
+save_audio(result.residual[0], f"{stem}_residual-large.wav", sample_rate=model.sample_rate)
 
 print("Merging residual audio with original video...")
 output_video = f"{stem}_muted.mp4"
@@ -75,7 +79,7 @@ subprocess.run(
     [
         "ffmpeg", "-y",
         "-i", str(input_path),
-        "-i", f"{stem}_residual.wav",
+        "-i", f"{stem}_residual-large.wav",
         "-map", "0:v:0",
         "-map", "1:a:0",
         "-c:v", "copy",
@@ -88,4 +92,4 @@ subprocess.run(
 )
 
 print(f"Peak memory: {result.peak_memory:.2f} GB")
-print(f"Output: {stem}_separated.wav, {stem}_residual.wav, {output_video}")
+print(f"Output: {stem}_separated-large.wav, {stem}_residual-large.wav, {output_video}")
